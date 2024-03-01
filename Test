@@ -1,0 +1,134 @@
+import pygame
+import random
+import sys
+from pygame.locals import *
+
+# Constants
+WIDTH = 600
+HEIGHT = 600
+ROWS = 15
+COLS = 15
+CELL_SIZE = (WIDTH // COLS, HEIGHT // ROWS)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+FOREST_GREEN = (190, 255, 0)
+
+pygame.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+clock = pygame.time.Clock()
+pygame.display.set_caption("Wandering Woods")
+font = pygame.font.SysFont(None, 30)
+
+def create_text(text, font, screen, x, y):
+    dialoge = font.render(text, 2, BLACK)
+    textBox = dialoge.get_rect()
+    textBox.topleft = (x, y)
+    screen.blit(dialoge, textBox)
+
+class Player(pygame.sprite.Sprite):
+    def __init__(self, color, width, height):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface((15, 15))
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
+        self.rect.center = (width, height)
+        
+    def moves(self):
+        random_dir = random.randrange(1, 5)
+
+        if random_dir == 1:
+            self.rect.move_ip(0, 40)
+            if self.rect.top > HEIGHT:
+                self.kill()
+        elif random_dir == 2:
+            self.rect.move_ip(0, -40)
+            if self.rect.top < 0:
+                self.kill()
+        elif random_dir == 3:
+            self.rect.move_ip(40, 0)
+            if self.rect.left > WIDTH:
+                self.kill()
+        else:
+            self.rect.move_ip(-40, 0)
+            if self.rect.left < 0:
+                self.kill()
+
+def draw_grid():
+    for x in range(0, WIDTH, CELL_SIZE[0]):
+        pygame.draw.line(screen, BLACK, (x, 0), (x, HEIGHT))
+    for y in range(0, HEIGHT, CELL_SIZE[1]):
+        pygame.draw.line(screen, BLACK, (0, y), (WIDTH, y))
+
+def level_one():
+    running = True
+    players = pygame.sprite.Group()
+    p1 = Player(RED, 20, 20)
+    players.add(p1)
+    p2 = Player(BLUE, 580, 580)
+    players.add(p2)
+    
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        
+        for player in players:
+            player.moves()
+
+        screen.fill(FOREST_GREEN)
+        draw_grid()
+        players.draw(screen)
+        pygame.display.update()
+        clock.tick(5)  
+
+def level_two():
+    running = True
+    players = pygame.sprite.Group()
+    # You can add more players and randomize their positions for level two
+    p1 = Player(RED, 20, 20)
+    players.add(p1)
+    p2 = Player(BLUE, 580, 580)
+    players.add(p2)
+    
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        
+        for player in players:
+            player.moves()
+
+        screen.fill(FOREST_GREEN)
+        draw_grid()
+        players.draw(screen)
+        pygame.display.update()
+        clock.tick(5)  
+
+def level_three():
+    running = True
+    # Add your level three logic here
+    
+def main():
+    level = 1  # Start at level one
+    while True:
+        if level == 1:
+            level_one()
+        elif level == 2:
+            level_two()
+        elif level == 3:
+            level_three()
+        else:
+            print("Invalid level")
+            break
+        
+        level += 1
+        if level > 3:
+            level = 1
+
+if __name__ == "__main__":
+    main()
+    pygame.quit()
+    sys.exit()
